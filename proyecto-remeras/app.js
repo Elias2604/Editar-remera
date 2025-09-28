@@ -5,6 +5,7 @@ const canvas = new fabric.Canvas("tshirtCanvas", {
   selection: true,
 });
 
+// Ajustar tamaño del canvas al contenedor
 function resizeCanvas() {
   const editor = document.querySelector(".editor");
   const rect = editor.getBoundingClientRect();
@@ -15,34 +16,26 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-// ==================== DATOS DE REMERAS ====================
-let tshirtSets = {
-  blanco: ["img/remera_amarillo_1.png", "img/remera_amarrillo_2.png"],
-  negro: ["img/remera_bordo_1.png", "img/remera_bordo_2.png"],
-  rojo: ["img/remera_roja_1.png", "img/remera_roja_2.png"],
-  azul: ["img/remera_azul_1.png", "img/remera_azul_2.png"],
-  verde: ["img/remera_verde_1.png", "img/remera_verde_2.png"],
-};
-
-let currentColor = "azul";
-let tshirtImages = tshirtSets[currentColor];
+// ==================== REMERAS (FRENTE / DORSO) ====================
+let tshirtImages = [
+  "img/remera_azul_1.png", // frontal
+  "img/remera_azul_2.png", // trasera
+];
 let currentTshirtIndex = 0;
 let tshirtBase = null;
 
-// Diseños guardados por color y lado
+// Guardamos diseños separados para cada lado
 let designs = {
-  blanco: { 0: [], 1: [] },
-  negro: { 0: [], 1: [] },
-  rojo: { 0: [], 1: [] },
-  azul: { 0: [], 1: [] },
-  verde: { 0: [], 1: [] },
+  0: [], // frente
+  1: [], // dorso
 };
 
-// ==================== FUNCIONES DE CARGA Y GUARDADO ====================
+// Cargar una remera en el canvas
 function loadTshirt(imagePath) {
   fabric.Image.fromURL(imagePath, (img) => {
     if (tshirtBase) canvas.remove(tshirtBase);
 
+    // Escalar y centrar imagen base
     img.scaleToWidth(canvas.width * 0.8);
     img.set({
       selectable: false,
@@ -58,19 +51,22 @@ function loadTshirt(imagePath) {
   });
 }
 
+// Guardar el diseño actual (sin la remera base)
 function saveCurrentDesign() {
-  designs[currentColor][currentTshirtIndex] = canvas
+  designs[currentTshirtIndex] = canvas
     .getObjects()
     .filter((obj) => obj !== tshirtBase)
     .map((obj) => obj.toObject());
 }
 
-function restoreDesign(color, index) {
+// Restaurar un diseño guardado
+function restoreDesign(index) {
+  // Eliminar todos los objetos menos la base
   canvas.getObjects().forEach((obj) => {
     if (obj !== tshirtBase) canvas.remove(obj);
   });
 
-  const saved = designs[color][index];
+  const saved = designs[index];
   if (saved && saved.length > 0) {
     fabric.util.enlivenObjects(saved, (objs) => {
       objs.forEach((obj) => canvas.add(obj));
@@ -79,26 +75,8 @@ function restoreDesign(color, index) {
   }
 }
 
-// Cargar remera inicial
+// Cargar la remera inicial
 loadTshirt(tshirtImages[currentTshirtIndex]);
-
-// ==================== ANIMACIÓN DE TRANSICIÓN ====================
-function transitionTshirt(newIndex) {
-  const canvasElement = document.getElementById("tshirtCanvas");
-  saveCurrentDesign();
-
-  canvasElement.classList.add("flip-out");
-
-  setTimeout(() => {
-    currentTshirtIndex = newIndex;
-    loadTshirt(tshirtImages[currentTshirtIndex]);
-    restoreDesign(currentColor, currentTshirtIndex);
-
-    canvasElement.classList.remove("flip-out");
-    canvasElement.classList.add("flip-in");
-    setTimeout(() => canvasElement.classList.remove("flip-in"), 400);
-  }, 400);
-}
 
 // ==================== CONTROLES ====================
 const btnPrev = document.getElementById("btnPrev");
@@ -111,7 +89,35 @@ const textColor = document.getElementById("textColor");
 const textFont = document.getElementById("textFont");
 const textSize = document.getElementById("textSize");
 
-// Botones prev / next
+// ==================== CAMBIO DE MODELO CON TRANSICIÓN ====================
+function transitionTshirt(newIndex) {
+  const canvasElement = document.getElementById("tshirtCanvas");
+
+  // Guardar el diseño actual antes de cambiar
+  saveCurrentDesign();
+
+  // Animación de salida
+  canvasElement.classList.add("flip-out");
+
+  setTimeout(() => {
+    currentTshirtIndex = newIndex;
+    loadTshirt(tshirtImages[currentTshirtIndex]);
+
+    // Restaurar el diseño correspondiente al nuevo lado
+    restoreDesign(currentTshirtIndex);
+
+    // Animación de entrada
+    canvasElement.classList.remove("flip-out");
+    canvasElement.classList.add("flip-in");
+
+    // Quitar clase de entrada al terminar
+    setTimeout(() => {
+      canvasElement.classList.remove("flip-in");
+    }, 400);
+  }, 400);
+}
+
+// Botones de navegación
 btnPrev.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -127,7 +133,7 @@ btnNext.addEventListener("click", (e) => {
   transitionTshirt(newIndex);
 });
 
-// ==================== EVENTOS DE EDICIÓN ====================
+// ==================== FUNCIONES DE EDICIÓN ====================
 
 // Subir imagen
 upload.addEventListener("change", (e) => {
@@ -193,20 +199,12 @@ textSize.addEventListener("input", (e) => {
   }
 });
 
-// ==================== CAMBIO DE MODELO POR COLOR ====================
+// Cambiar color del fondo (simulación del color de la remera)
 colorCircles.forEach((circle) => {
   circle.addEventListener("click", () => {
-    const newColor = circle.dataset.color;
-    if (newColor === currentColor) return;
-
-    saveCurrentDesign();
-
-    currentColor = newColor;
-    tshirtImages = tshirtSets[newColor];
-    currentTshirtIndex = 0;
-
-    transitionTshirt(currentTshirtIndex);
+    canvas.setBackgroundColor(
+      circle.dataset.color,
+      canvas.renderAll.bind(canvas)
+    );
   });
 });
-
-git init
