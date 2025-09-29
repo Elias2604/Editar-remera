@@ -1,11 +1,11 @@
 // ==================== CONFIGURACIÓN DEL CANVAS ====================
 const canvas = new fabric.Canvas("tshirtCanvas", {
-  backgroundColor: "#f5f5f5",
+  backgroundColor: "#e5e5e5",
   preserveObjectStacking: true,
   selection: true,
 });
 
-// Ajustar tamaño del canvas al contenedor
+// Ajustar tamaño del canvas
 function resizeCanvas() {
   const editor = document.querySelector(".editor");
   const rect = editor.getBoundingClientRect();
@@ -18,24 +18,27 @@ resizeCanvas();
 
 // ==================== REMERAS (FRENTE / DORSO) ====================
 let tshirtImages = [
-  "img/remera_azul_1.png", // frontal
-  "img/remera_azul_2.png", // trasera
+  "img/blanco.png", // frente
+  "img/blanco_2.png", // dorso
+  "img/remera_rojo_1.png", // frente
+  "img/remera_rojo_2.png", // dorso
+  "img/remera_verde_1.png", // frente 
+  "img/remera_verde_2.png", // dorso
 ];
 let currentTshirtIndex = 0;
 let tshirtBase = null;
 
-// Guardamos diseños separados para cada lado
+// Guardamos diseños independientes
 let designs = {
   0: [], // frente
-  1: [], // dorso
+  1: []  // dorso
 };
 
-// Cargar una remera en el canvas
+// ==================== CARGAR REMERA ====================
 function loadTshirt(imagePath) {
   fabric.Image.fromURL(imagePath, (img) => {
     if (tshirtBase) canvas.remove(tshirtBase);
 
-    // Escalar y centrar imagen base
     img.scaleToWidth(canvas.width * 0.8);
     img.set({
       selectable: false,
@@ -51,7 +54,7 @@ function loadTshirt(imagePath) {
   });
 }
 
-// Guardar el diseño actual (sin la remera base)
+// ==================== GUARDAR Y RESTAURAR ====================
 function saveCurrentDesign() {
   designs[currentTshirtIndex] = canvas
     .getObjects()
@@ -59,9 +62,8 @@ function saveCurrentDesign() {
     .map((obj) => obj.toObject());
 }
 
-// Restaurar un diseño guardado
 function restoreDesign(index) {
-  // Eliminar todos los objetos menos la base
+  // Quitar todo excepto la base
   canvas.getObjects().forEach((obj) => {
     if (obj !== tshirtBase) canvas.remove(obj);
   });
@@ -75,69 +77,45 @@ function restoreDesign(index) {
   }
 }
 
-// Cargar la remera inicial
+// ==================== CARGA INICIAL ====================
 loadTshirt(tshirtImages[currentTshirtIndex]);
 
-// ==================== CONTROLES ====================
-const btnPrev = document.getElementById("btnPrev");
-const btnNext = document.getElementById("btnNext");
-const upload = document.getElementById("upload");
-const addTextBtn = document.getElementById("btnTexto");
-const deleteBtn = document.getElementById("deleteBtn");
-const colorCircles = document.querySelectorAll(".color-circle");
-const textColor = document.getElementById("textColor");
-const textFont = document.getElementById("textFont");
-const textSize = document.getElementById("textSize");
-
-// ==================== CAMBIO DE MODELO CON TRANSICIÓN ====================
+// ==================== CAMBIO DE VISTA CON TRANSICIÓN ====================
 function transitionTshirt(newIndex) {
   const canvasElement = document.getElementById("tshirtCanvas");
-
-  // Guardar el diseño actual antes de cambiar
   saveCurrentDesign();
 
-  // Animación de salida
   canvasElement.classList.add("flip-out");
 
   setTimeout(() => {
     currentTshirtIndex = newIndex;
     loadTshirt(tshirtImages[currentTshirtIndex]);
-
-    // Restaurar el diseño correspondiente al nuevo lado
     restoreDesign(currentTshirtIndex);
 
-    // Animación de entrada
     canvasElement.classList.remove("flip-out");
     canvasElement.classList.add("flip-in");
 
-    // Quitar clase de entrada al terminar
-    setTimeout(() => {
-      canvasElement.classList.remove("flip-in");
-    }, 400);
+    setTimeout(() => canvasElement.classList.remove("flip-in"), 400);
   }, 400);
 }
 
-// Botones de navegación
-btnPrev.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+// Flechas
+document.getElementById("btnPrev").addEventListener("click", () => {
   const newIndex =
     (currentTshirtIndex - 1 + tshirtImages.length) % tshirtImages.length;
   transitionTshirt(newIndex);
 });
 
-btnNext.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+document.getElementById("btnNext").addEventListener("click", () => {
   const newIndex = (currentTshirtIndex + 1) % tshirtImages.length;
   transitionTshirt(newIndex);
 });
 
-// ==================== FUNCIONES DE EDICIÓN ====================
-
-// Subir imagen
-upload.addEventListener("change", (e) => {
+// ==================== EDICIÓN ====================
+document.getElementById("upload").addEventListener("change", (e) => {
   const file = e.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
   reader.onload = (f) => {
     fabric.Image.fromURL(f.target.result, (img) => {
@@ -148,13 +126,17 @@ upload.addEventListener("change", (e) => {
       });
       canvas.add(img);
       canvas.setActiveObject(img);
+      saveCurrentDesign();
     });
   };
   reader.readAsDataURL(file);
+
+  // 🔧 Vaciar el input para permitir volver a elegir la misma imagen
+  e.target.value = "";
 });
 
-// Agregar texto
-addTextBtn.addEventListener("click", () => {
+
+document.getElementById("btnTexto").addEventListener("click", () => {
   const text = new fabric.IText("Texto personalizado", {
     left: canvas.width / 2 - 60,
     top: canvas.height / 2 - 30,
@@ -164,47 +146,62 @@ addTextBtn.addEventListener("click", () => {
   });
   canvas.add(text);
   canvas.setActiveObject(text);
+  saveCurrentDesign(); // 🔹 guarda el texto solo en el lado actual
 });
 
-// Eliminar seleccionado
-deleteBtn.addEventListener("click", () => {
+document.getElementById("deleteBtn").addEventListener("click", () => {
   const active = canvas.getActiveObject();
-  if (active && active !== tshirtBase) canvas.remove(active);
+  if (active && active !== tshirtBase) {
+    canvas.remove(active);
+    saveCurrentDesign(); // 🔹 actualiza diseño tras eliminar
+  }
 });
 
-// Cambiar color de texto
-textColor.addEventListener("input", (e) => {
+// ==================== TEXTO ====================
+document.getElementById("textColor").addEventListener("input", (e) => {
   const active = canvas.getActiveObject();
   if (active && active.type === "i-text") {
     active.set("fill", e.target.value);
     canvas.renderAll();
+    saveCurrentDesign();
   }
 });
 
-// Cambiar tipografía
-textFont.addEventListener("change", (e) => {
+document.getElementById("textFont").addEventListener("change", (e) => {
   const active = canvas.getActiveObject();
   if (active && active.type === "i-text") {
     active.set("fontFamily", e.target.value);
     canvas.renderAll();
+    saveCurrentDesign();
   }
 });
 
-// Cambiar tamaño del texto
-textSize.addEventListener("input", (e) => {
+document.getElementById("textSize").addEventListener("input", (e) => {
   const active = canvas.getActiveObject();
   if (active && active.type === "i-text") {
     active.set("fontSize", parseInt(e.target.value));
     canvas.renderAll();
+    saveCurrentDesign();
   }
 });
 
-// Cambiar color del fondo (simulación del color de la remera)
+// ==================== CAMBIO DE COLOR (TINTADO) ====================
+const colorCircles = document.querySelectorAll(".color-circle");
+
 colorCircles.forEach((circle) => {
   circle.addEventListener("click", () => {
-    canvas.setBackgroundColor(
-      circle.dataset.color,
-      canvas.renderAll.bind(canvas)
+    if (!tshirtBase) return;
+    const color = circle.style.backgroundColor;
+
+    tshirtBase.filters = [];
+    tshirtBase.filters.push(
+      new fabric.Image.filters.BlendColor({
+        color: color,
+        mode: "tint",
+        alpha: 0.8,
+      })
     );
+    tshirtBase.applyFilters();
+    canvas.renderAll();
   });
 });
