@@ -18,14 +18,19 @@ resizeCanvas();
 
 // ==================== REMERAS (FRENTE / DORSO) ====================
 let tshirtImages = [
-  "img/blanco.png", // frente
-  "img/blanco_2.png", // dorso
-  "img/remera_rojo_1.png", // frente
-  "img/remera_rojo_2.png", // dorso
-  "img/remera_verde_1.png", // frente 
-  "img/remera_verde_2.png", // dorso
+  "img/blanco.png",
+  "img/remera_rojo_1.png",
+  "img/remera_verde_1.png",
+  // agrega aquí otros frentes si tienes más
+];
+let tshirtBackImages = [
+  "img/blanco_2.png",
+  "img/remera_rojo_2.png",
+  "img/remera_verde_2.png",
+  // agrega aquí otros dorsos si tienes más
 ];
 let currentTshirtIndex = 0;
+let isFront = true;
 let tshirtBase = null;
 
 // Guardamos diseños independientes
@@ -35,7 +40,11 @@ let designs = {
 };
 
 // ==================== CARGAR REMERA ====================
-function loadTshirt(imagePath) {
+function loadTshirt() {
+  const imagePath = isFront
+    ? tshirtImages[currentTshirtIndex]
+    : tshirtBackImages[currentTshirtIndex];
+
   fabric.Image.fromURL(imagePath, (img) => {
     if (tshirtBase) canvas.remove(tshirtBase);
 
@@ -56,19 +65,19 @@ function loadTshirt(imagePath) {
 
 // ==================== GUARDAR Y RESTAURAR ====================
 function saveCurrentDesign() {
-  designs[currentTshirtIndex] = canvas
+  const key = currentTshirtIndex + (isFront ? "" : "_back");
+  designs[key] = canvas
     .getObjects()
     .filter((obj) => obj !== tshirtBase)
     .map((obj) => obj.toObject());
 }
 
-function restoreDesign(index) {
-  // Quitar todo excepto la base
+function restoreDesign(key) {
   canvas.getObjects().forEach((obj) => {
     if (obj !== tshirtBase) canvas.remove(obj);
   });
 
-  const saved = designs[index];
+  const saved = designs[key];
   if (saved && saved.length > 0) {
     fabric.util.enlivenObjects(saved, (objs) => {
       objs.forEach((obj) => canvas.add(obj));
@@ -78,37 +87,59 @@ function restoreDesign(index) {
 }
 
 // ==================== CARGA INICIAL ====================
-loadTshirt(tshirtImages[currentTshirtIndex]);
+loadTshirt();
 
 // ==================== CAMBIO DE VISTA CON TRANSICIÓN ====================
 function transitionTshirt(newIndex) {
-  const canvasElement = document.getElementById("tshirtCanvas");
-  saveCurrentDesign();
-
-  canvasElement.classList.add("flip-out");
+  // Aplica animación de salida
+  const canvasEl = document.getElementById("tshirtCanvas");
+  canvasEl.classList.add("flip-out");
 
   setTimeout(() => {
+    saveCurrentDesign();
     currentTshirtIndex = newIndex;
-    loadTshirt(tshirtImages[currentTshirtIndex]);
-    restoreDesign(currentTshirtIndex);
+    loadTshirt();
+    restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
 
-    canvasElement.classList.remove("flip-out");
-    canvasElement.classList.add("flip-in");
+    // Quita animación de salida y aplica animación de entrada
+    canvasEl.classList.remove("flip-out");
+    canvasEl.classList.add("flip-in");
 
-    setTimeout(() => canvasElement.classList.remove("flip-in"), 400);
+    setTimeout(() => {
+      canvasEl.classList.remove("flip-in");
+    }, 400);
   }, 400);
 }
 
 // Flechas
 document.getElementById("btnPrev").addEventListener("click", () => {
-  const newIndex =
-    (currentTshirtIndex - 1 + tshirtImages.length) % tshirtImages.length;
+  const newIndex = (currentTshirtIndex - 1 + tshirtImages.length) % tshirtImages.length;
   transitionTshirt(newIndex);
 });
 
 document.getElementById("btnNext").addEventListener("click", () => {
   const newIndex = (currentTshirtIndex + 1) % tshirtImages.length;
   transitionTshirt(newIndex);
+});
+
+// Botón para girar entre frente y dorso con animación flip vertical
+document.getElementById("btnFlip").addEventListener("click", () => {
+  const canvasEl = document.getElementById("tshirtCanvas");
+  canvasEl.classList.add("flip-vertical-out");
+
+  setTimeout(() => {
+    saveCurrentDesign();
+    isFront = !isFront;
+    loadTshirt();
+    restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
+
+    canvasEl.classList.remove("flip-vertical-out");
+    canvasEl.classList.add("flip-vertical-in");
+
+    setTimeout(() => {
+      canvasEl.classList.remove("flip-vertical-in");
+    }, 400);
+  }, 400);
 });
 
 // ==================== EDICIÓN ====================
