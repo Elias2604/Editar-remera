@@ -205,3 +205,41 @@ colorCircles.forEach((circle) => {
     canvas.renderAll();
   });
 });
+
+// ==================== BOTONES MÓVILES ====================
+document.getElementById("btnTextoMobile").addEventListener("click", () => {
+  const text = new fabric.IText("Texto personalizado", {
+    left: canvas.width / 2 - 60,
+    top: canvas.height / 2 - 30,
+    fill: "#000",
+    fontFamily: "Arial",
+    fontSize: 24,
+  });
+  canvas.add(text);
+  canvas.setActiveObject(text);
+  saveCurrentDesign();
+});
+
+document.getElementById("deleteBtnMobile").addEventListener("click", () => {
+  const active = canvas.getActiveObject();
+  if (active && active !== tshirtBase) {
+    canvas.remove(active);
+    saveCurrentDesign();
+  }
+});
+
+// Al tocar "Color" en móvil: abrir un selector rápido de color
+document.getElementById("colorBtnMobile").addEventListener("click", () => {
+  const color = prompt("Ingrese un color (nombre o código HEX):", "#ff0000");
+  if (!color || !tshirtBase) return;
+  tshirtBase.filters = [
+    new fabric.Image.filters.BlendColor({
+      color: color,
+      mode: "tint",
+      alpha: 0.8,
+    }),
+  ];
+  tshirtBase.applyFilters();
+  canvas.renderAll();
+});
+

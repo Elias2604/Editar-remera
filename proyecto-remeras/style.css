@@ -84,7 +84,7 @@ input[type="file"] {
 /* ===== Sidebar derecha ===== */
 .sidebar-right {
   width: 280px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(116, 116, 116, 0.85);
   backdrop-filter: blur(10px);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   padding: 120px 25px 30px;
@@ -115,7 +115,7 @@ input[type="file"] {
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #ccc;
+  border: 2px solid #353434;
   transition: transform 0.25s ease, border-color 0.25s ease;
 }
 
@@ -434,4 +434,59 @@ canvas.flip-in {
 
 .flip-in {
   animation: flipIn 0.4s ease forwards;
+}
+
+/* ===== BARRA DE HERRAMIENTAS MÓVIL ===== */
+.mobile-toolbar {
+  display: none; /* se muestra solo en móvil */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: rgba(20, 20, 20, 0.95);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 2px solid #444;
+  z-index: 2000;
+}
+
+.tool-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.tool-btn i {
+  font-size: 20px;
+}
+
+.tool-btn:hover {
+  color: #38b6ff;
+  transform: scale(1.05);
+}
+
+/* Mostrar solo en pantallas pequeñas */
+@media (max-width: 768px) {
+  .mobile-toolbar {
+    display: flex;
+  }
+
+  /* Ocultar sidebars en móvil */
+  .sidebar, .sidebar-right {
+    display: none;
+  }
+
+  .editor {
+    padding: 80px 0 80px; /* espacio para header y barra inferior */
+  }
 }
