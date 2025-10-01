@@ -18,26 +18,26 @@ resizeCanvas();
 
 // ==================== REMERAS (FRENTE / DORSO) ====================
 let tshirtImages = [
-  "img/blanco.png",
-  "img/remera_rojo_1.png",
-  "img/remera_verde_1.png",
-  // agrega aquí otros frentes si tienes más
+  "img/blanco.png",         // 0
+  "img/remera_bordo_1.png", // 1
+  "img/remera_rojo_1.png",  // 2
+  "img/remera_azul_1.png",  // 3
+  "img/remera_verde_1.png", // 4
 ];
 let tshirtBackImages = [
-  "img/blanco_2.png",
-  "img/remera_rojo_2.png",
-  "img/remera_verde_2.png",
-  // agrega aquí otros dorsos si tienes más
+  "img/blanco_2.png",         // 0
+  "img/remera_bordo_2.png",   // 1
+  "img/remera_rojo_2.png",    // 2
+  "img/remera_azul_2.png",    // 3
+  "img/remera_verde_2.png",   // 4
 ];
+
 let currentTshirtIndex = 0;
 let isFront = true;
 let tshirtBase = null;
 
 // Guardamos diseños independientes
-let designs = {
-  0: [], // frente
-  1: []  // dorso
-};
+let designs = {};
 
 // ==================== CARGAR REMERA ====================
 function loadTshirt() {
@@ -89,19 +89,44 @@ function restoreDesign(key) {
 // ==================== CARGA INICIAL ====================
 loadTshirt();
 
-// ==================== CAMBIO DE VISTA CON TRANSICIÓN ====================
-function transitionTshirt(newIndex) {
-  // Aplica animación de salida
+// ==================== CAMBIO DE COLOR (FADE SUAVE) ====================
+const colorCircles = document.querySelectorAll(".color-circle");
+
+colorCircles.forEach((circle, index) => {
+  circle.addEventListener("click", () => {
+    const canvasEl = document.getElementById("tshirtCanvas");
+    canvasEl.classList.add("fade-out");
+
+    setTimeout(() => {
+      saveCurrentDesign();
+      currentTshirtIndex = index;
+      loadTshirt();
+      restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
+
+      canvasEl.classList.remove("fade-out");
+      canvasEl.classList.add("fade-in");
+
+      setTimeout(() => {
+        canvasEl.classList.remove("fade-in");
+      }, 400);
+    }, 300);
+  });
+});
+
+// ==================== BOTONES DE GIRO (FRENTE ↔ DORSO CON FLIP LATERAL) ====================
+document.getElementById("btnPrev").addEventListener("click", flipTshirt);
+document.getElementById("btnNext").addEventListener("click", flipTshirt);
+
+function flipTshirt() {
   const canvasEl = document.getElementById("tshirtCanvas");
   canvasEl.classList.add("flip-out");
 
   setTimeout(() => {
     saveCurrentDesign();
-    currentTshirtIndex = newIndex;
+    isFront = !isFront;
     loadTshirt();
     restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
 
-    // Quita animación de salida y aplica animación de entrada
     canvasEl.classList.remove("flip-out");
     canvasEl.classList.add("flip-in");
 
@@ -110,37 +135,6 @@ function transitionTshirt(newIndex) {
     }, 400);
   }, 400);
 }
-
-// Flechas
-document.getElementById("btnPrev").addEventListener("click", () => {
-  const newIndex = (currentTshirtIndex - 1 + tshirtImages.length) % tshirtImages.length;
-  transitionTshirt(newIndex);
-});
-
-document.getElementById("btnNext").addEventListener("click", () => {
-  const newIndex = (currentTshirtIndex + 1) % tshirtImages.length;
-  transitionTshirt(newIndex);
-});
-
-// Botón para girar entre frente y dorso con animación flip vertical
-document.getElementById("btnFlip").addEventListener("click", () => {
-  const canvasEl = document.getElementById("tshirtCanvas");
-  canvasEl.classList.add("flip-vertical-out");
-
-  setTimeout(() => {
-    saveCurrentDesign();
-    isFront = !isFront;
-    loadTshirt();
-    restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
-
-    canvasEl.classList.remove("flip-vertical-out");
-    canvasEl.classList.add("flip-vertical-in");
-
-    setTimeout(() => {
-      canvasEl.classList.remove("flip-vertical-in");
-    }, 400);
-  }, 400);
-});
 
 // ==================== EDICIÓN ====================
 document.getElementById("upload").addEventListener("change", (e) => {
@@ -161,11 +155,8 @@ document.getElementById("upload").addEventListener("change", (e) => {
     });
   };
   reader.readAsDataURL(file);
-
-  // 🔧 Vaciar el input para permitir volver a elegir la misma imagen
   e.target.value = "";
 });
-
 
 document.getElementById("btnTexto").addEventListener("click", () => {
   const text = new fabric.IText("Texto personalizado", {
@@ -177,14 +168,14 @@ document.getElementById("btnTexto").addEventListener("click", () => {
   });
   canvas.add(text);
   canvas.setActiveObject(text);
-  saveCurrentDesign(); // 🔹 guarda el texto solo en el lado actual
+  saveCurrentDesign();
 });
 
 document.getElementById("deleteBtn").addEventListener("click", () => {
   const active = canvas.getActiveObject();
   if (active && active !== tshirtBase) {
     canvas.remove(active);
-    saveCurrentDesign(); // 🔹 actualiza diseño tras eliminar
+    saveCurrentDesign();
   }
 });
 
@@ -216,61 +207,71 @@ document.getElementById("textSize").addEventListener("input", (e) => {
   }
 });
 
-// ==================== CAMBIO DE COLOR (TINTADO) ====================
-const colorCircles = document.querySelectorAll(".color-circle");
-
-colorCircles.forEach((circle) => {
-  circle.addEventListener("click", () => {
-    if (!tshirtBase) return;
-    const color = circle.style.backgroundColor;
-
-    tshirtBase.filters = [];
-    tshirtBase.filters.push(
-      new fabric.Image.filters.BlendColor({
-        color: color,
-        mode: "tint",
-        alpha: 0.8,
+function rgbToHex(rgb) {
+  const result = rgb.match(/\d+/g);
+  return (
+    "#" +
+    result
+      .map((x) => {
+        const hex = parseInt(x).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
       })
-    );
-    tshirtBase.applyFilters();
-    canvas.renderAll();
+      .join("")
+  );
+}
+
+// ==================== PANEL DE COLORES EN MÓVIL ====================
+
+// Crear el panel flotante dinámicamente
+const colorPanel = document.createElement("div");
+colorPanel.classList.add("color-panel-mobile");
+colorPanel.innerHTML = `
+  <h3>Selecciona un color</h3>
+  <div class="color-options-mobile">
+    <div class="color-circle" style="background:#ffffff;" title="Blanco" data-index="0"></div>
+    <div class="color-circle" style="background:#800000;" title="Bordo" data-index="1"></div>
+    <div class="color-circle" style="background:#ff0000;" title="Rojo" data-index="2"></div>
+    <div class="color-circle" style="background:#0000ff;" title="Azul" data-index="3"></div>
+    <div class="color-circle" style="background:#00ff00;" title="Verde" data-index="4"></div>
+  </div>
+  <button id="closeColorPanel" class="close-panel">Cerrar</button>
+`;
+document.body.appendChild(colorPanel);
+
+// Mostrar/Ocultar panel desde el botón móvil
+const colorBtnMobile = document.getElementById("colorBtnMobile");
+const closeColorPanel = document.getElementById("closeColorPanel");
+
+colorBtnMobile.addEventListener("click", () => {
+  colorPanel.classList.add("show");
+});
+
+closeColorPanel.addEventListener("click", () => {
+  colorPanel.classList.remove("show");
+});
+
+// Reutilizar la misma lógica de cambio de color con fade
+const mobileCircles = colorPanel.querySelectorAll(".color-circle");
+mobileCircles.forEach((circle) => {
+  circle.addEventListener("click", () => {
+    const index = parseInt(circle.dataset.index);
+    const canvasEl = document.getElementById("tshirtCanvas");
+    canvasEl.classList.add("fade-out");
+
+    setTimeout(() => {
+      saveCurrentDesign();
+      currentTshirtIndex = index;
+      loadTshirt();
+      restoreDesign(currentTshirtIndex + (isFront ? "" : "_back"));
+
+      canvasEl.classList.remove("fade-out");
+      canvasEl.classList.add("fade-in");
+
+      setTimeout(() => {
+        canvasEl.classList.remove("fade-in");
+      }, 400);
+    }, 300);
+
+    colorPanel.classList.remove("show");
   });
 });
-
-// ==================== BOTONES MÓVILES ====================
-document.getElementById("btnTextoMobile").addEventListener("click", () => {
-  const text = new fabric.IText("Texto personalizado", {
-    left: canvas.width / 2 - 60,
-    top: canvas.height / 2 - 30,
-    fill: "#000",
-    fontFamily: "Arial",
-    fontSize: 24,
-  });
-  canvas.add(text);
-  canvas.setActiveObject(text);
-  saveCurrentDesign();
-});
-
-document.getElementById("deleteBtnMobile").addEventListener("click", () => {
-  const active = canvas.getActiveObject();
-  if (active && active !== tshirtBase) {
-    canvas.remove(active);
-    saveCurrentDesign();
-  }
-});
-
-// Al tocar "Color" en móvil: abrir un selector rápido de color
-document.getElementById("colorBtnMobile").addEventListener("click", () => {
-  const color = prompt("Ingrese un color (nombre o código HEX):", "#ff0000");
-  if (!color || !tshirtBase) return;
-  tshirtBase.filters = [
-    new fabric.Image.filters.BlendColor({
-      color: color,
-      mode: "tint",
-      alpha: 0.8,
-    }),
-  ];
-  tshirtBase.applyFilters();
-  canvas.renderAll();
-});
-
