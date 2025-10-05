@@ -5,13 +5,13 @@ const canvas = new fabric.Canvas("tshirtCanvas", {
 });
 
 let tshirtFront = [
-  "img/blanco.png",
+  "img/remera_blanca_1.jpeg",
   "img/remera_rojo_1.png",
   "img/remera_bordo_1.png",
   "img/remera_azul_1.png",
 ];
 let tshirtBack = [
-  "img/blanco_2.png",
+  "img/remera_blanca_2.jpeg",
   "img/remera_rojo_2.png",
   "img/remera_bordo_2.png",
   "img/remera_azul_2.png",
@@ -116,7 +116,7 @@ closeModal.addEventListener("click", () => sendModal.style.display = "none");
 
 document.getElementById("sendWhatsapp").addEventListener("click", () => {
   const mensaje = encodeURIComponent(document.getElementById("mensajeExtra").value);
-  const url = `https://wa.me/5491122334455?text=Hola! Quiero enviar mi diseño personalizado.%0A${mensaje}`;
+  const url = `https://wa.me/+5491166415906?text=Hola! Quiero enviar mi diseño personalizado.%0A${mensaje}`;
   window.open(url, "_blank");
 });
 
