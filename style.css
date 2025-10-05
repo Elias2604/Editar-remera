@@ -305,3 +305,69 @@ button.selected {
     padding: 18px;
   }
 }
+
+/* ---------- PANEL MÓVIL DESPLEGABLE ---------- */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background: #38b6ff;
+  color: #000;
+  font-size: 22px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 1100;
+}
+
+.mobile-toolbar {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 80%;
+  max-width: 350px;
+  height: 100vh;
+  background: #111;
+  color: #fff;
+  box-shadow: -3px 0 10px rgba(0,0,0,0.6);
+  transition: right 0.3s ease;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-toolbar.active {
+  right: 0;
+}
+
+.toolbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.toolbar-content {
+  padding: 15px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.toolbar-content .block {
+  margin-bottom: 25px;
+}
+
+/* Mostrar el botón solo en móvil */
+@media (max-width: 768px) {
+  .floating-btn {
+    display: flex;
+  }
+}
+

@@ -125,3 +125,114 @@ document.getElementById("sendEmail").addEventListener("click", () => {
   const mailto = `mailto:contacto@kael.com?subject=Nuevo diseño personalizado&body=${mensaje}`;
   window.location.href = mailto;
 });
+// ==================== PANEL MÓVIL ====================
+const mobileToolbar = document.getElementById("mobileToolbar");
+const toggleToolbar = document.getElementById("toggleToolbar");
+const closeToolbar = document.getElementById("closeToolbar");
+
+toggleToolbar.addEventListener("click", () => {
+  mobileToolbar.classList.add("active");
+});
+closeToolbar.addEventListener("click", () => {
+  mobileToolbar.classList.remove("active");
+});
+
+// MISMAS FUNCIONES PARA MOBILE
+document.getElementById("uploadMobile").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (f) => {
+    fabric.Image.fromURL(f.target.result, (img) => {
+      img.scale(0.4);
+      img.set({ left: canvas.width / 2 - 50, top: canvas.height / 2 - 50 });
+      canvas.add(img);
+      canvas.setActiveObject(img);
+    });
+  };
+  reader.readAsDataURL(file);
+  e.target.value = "";
+});
+
+document.getElementById("clearImageMobile").addEventListener("click", () => {
+  const obj = canvas.getActiveObject();
+  if (obj && obj !== tshirtBase) canvas.remove(obj);
+});
+
+document.getElementById("exportBtnMobile").addEventListener("click", () => {
+  const dataURL = canvas.toDataURL({ format: "png", quality: 1.0 });
+  const link = document.createElement("a");
+  link.href = dataURL;
+  link.download = "mi_diseño.png";
+  link.click();
+});
+
+document.getElementById("sendBtnMobile").addEventListener("click", () => {
+  document.getElementById("sendModal").style.display = "flex";
+  mobileToolbar.classList.remove("active");
+});
+
+
+
+
+toggleToolbar.addEventListener("click", () => {
+  mobileToolbar.classList.add("active");
+});
+closeToolbar.addEventListener("click", () => {
+  mobileToolbar.classList.remove("active");
+});
+
+// ==================== FUNCIONES MÓVILES ====================
+
+// Cambiar color
+document.querySelectorAll("#mobileToolbar .color-circle").forEach((circle, i) => {
+  circle.addEventListener("click", () => {
+    currentColorIndex = i % tshirtFront.length;
+    const canvasEl = document.getElementById("tshirtCanvas");
+    canvasEl.classList.add("fade-out");
+    setTimeout(() => {
+      loadTshirt();
+      canvasEl.classList.remove("fade-out");
+      canvasEl.classList.add("fade-in");
+      setTimeout(() => canvasEl.classList.remove("fade-in"), 300);
+    }, 300);
+  });
+});
+
+// Subir imagen
+document.getElementById("uploadMobile").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (f) => {
+    fabric.Image.fromURL(f.target.result, (img) => {
+      img.scale(0.4);
+      img.set({ left: canvas.width / 2 - 50, top: canvas.height / 2 - 50 });
+      canvas.add(img);
+      canvas.setActiveObject(img);
+    });
+  };
+  reader.readAsDataURL(file);
+  e.target.value = "";
+});
+
+// Limpiar imagen
+document.getElementById("clearImageMobile").addEventListener("click", () => {
+  const obj = canvas.getActiveObject();
+  if (obj && obj !== tshirtBase) canvas.remove(obj);
+});
+
+// Exportar PNG
+document.getElementById("exportBtnMobile").addEventListener("click", () => {
+  const dataURL = canvas.toDataURL({ format: "png", quality: 1.0 });
+  const link = document.createElement("a");
+  link.href = dataURL;
+  link.download = "mi_diseño.png";
+  link.click();
+});
+
+// Enviar diseño
+document.getElementById("sendBtnMobile").addEventListener("click", () => {
+  document.getElementById("sendModal").style.display = "flex";
+  mobileToolbar.classList.remove("active");
+});

@@ -142,6 +142,92 @@
     </div>
   </div>
 
+  <!-- 🔹 BOTÓN FLOTANTE (solo móvil) -->
+  <button id="toggleToolbar" class="floating-btn">
+    <i class="fa-solid fa-sliders"></i>
+  </button>
+
+  <!-- 🔹 PANEL DESPLEGABLE MÓVIL -->
+  <div id="mobileToolbar" class="mobile-toolbar">
+    <div class="toolbar-header">
+      <h2>Herramientas</h2>
+      <button id="closeToolbar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="toolbar-content">
+      <!-- COLOR -->
+      <div class="block">
+        <h3>Color de la prenda</h3>
+        <div class="color-options">
+          <div class="color-circle" style="background:#ffffff" title="Blanco"></div>
+          <div class="color-circle" style="background:#000000" title="Negro"></div>
+          <div class="color-circle" style="background:#ff0000" title="Rojo"></div>
+          <div class="color-circle" style="background:#800000" title="Bordo"></div>
+          <div class="color-circle" style="background:#0000ff" title="Azul"></div>
+          <div class="color-circle" style="background:#008000" title="Verde"></div>
+          <div class="color-circle" style="background:#ffff00" title="Amarillo"></div>
+          <div class="color-circle" style="background:#ff00ff" title="Fucsia"></div>
+        </div>
+      </div>
+
+      <!-- SUBIR IMAGEN -->
+      <div class="block">
+        <h3>Subí tu diseño (PNG/JPG)</h3>
+        <input type="file" id="uploadMobile" accept="image/*" />
+        <button id="clearImageMobile">Limpiar</button>
+      </div>
+
+      <!-- TALLE -->
+      <div class="block">
+        <h3>Talle</h3>
+        <div class="size-grid">
+          <button>S / 1</button>
+          <button>M / 2</button>
+          <button>L / 3</button>
+          <button>XL / 4</button>
+          <button>XXL / 5</button>
+        </div>
+        <h4>Oversize</h4>
+        <div class="size-grid">
+          <button>S / 1</button>
+          <button>M / 2</button>
+          <button>L / 3</button>
+          <button>XL / 4</button>
+          <button>XXL / 5</button>
+        </div>
+      </div>
+
+      <!-- CANTIDAD -->
+      <div class="block">
+        <h3>Cantidad de remeras</h3>
+        <input type="number" id="cantidadMobile" min="1" max="100" value="1" />
+      </div>
+
+      <!-- CALIDAD -->
+      <div class="block">
+        <h3>Calidad del algodón</h3>
+        <div class="calidad-btns">
+          <button class="selected">24.1</button>
+          <button>20.1</button>
+        </div>
+        <p class="info">
+          La tela <b>24.1</b> es más liviana y transpirable.<br>
+          La <b>20.1</b> es más pesada y gruesa.
+        </p>
+      </div>
+
+      <!-- EXPORTAR / ENVIAR -->
+      <div class="block export-section">
+        <button id="exportBtnMobile" class="big-btn">EXPORTAR PNG</button>
+        <button id="sendBtnMobile" class="big-btn highlight">ENVIAR DISEÑO</button>
+        <p class="info">
+          “Exportar PNG” guarda tu diseño en tu dispositivo.<br>
+          “Enviar diseño” te permite enviarlo por WhatsApp o Email junto con un mensaje adicional.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
