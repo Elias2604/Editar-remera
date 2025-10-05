@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAEL — Personalizá tu remera</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="https://kit.fontawesome.com/a2e0ad6d5d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- 🔹 HEADER -->
+  <header class="header">
+    <div class="logo">
+      <img src="img/logo.svg" alt="Logo KAEL" />
+      <div>
+        <h2>KAEL</h2>
+        <p>Ropa • Personalización</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#">Personalizar</a>
+      <a href="#">Cómo funciona</a>
+    </nav>
+  </header>
+
+  <!-- 🔹 MAIN -->
+  <main class="main-container">
+    <section class="intro">
+      <h1>KAEL — Personalizá tu remera</h1>
+      <p>
+        Elegí color, subí tu imagen y ajustala sobre la prenda.
+        Cuando esté listo podés exportarlo o enviármelo para producción.
+      </p>
+    </section>
+
+    <section class="editor-container">
+      <!-- CANVAS -->
+      <div class="canvas-container">
+        <canvas id="tshirtCanvas" width="400" height="500"></canvas>
+
+        <button id="btnPrev" class="arrow-btn left"><i class="fa-solid fa-chevron-left"></i></button>
+        <button id="btnNext" class="arrow-btn right"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+      <!-- CONTROLES -->
+      <div class="controls">
+        <!-- COLOR -->
+        <div class="block">
+          <h3>Color de la prenda</h3>
+          <div class="color-options">
+            <div class="color-circle" style="background:#ffffff" title="Blanco"></div>
+            <div class="color-circle" style="background:#000000" title="Negro"></div>
+            <div class="color-circle" style="background:#ff0000" title="Rojo"></div>
+            <div class="color-circle" style="background:#800000" title="Bordo"></div>
+            <div class="color-circle" style="background:#0000ff" title="Azul"></div>
+            <div class="color-circle" style="background:#008000" title="Verde"></div>
+            <div class="color-circle" style="background:#ffff00" title="Amarillo"></div>
+            <div class="color-circle" style="background:#ff00ff" title="Fucsia"></div>
+          </div>
+          <p class="info">
+            Probá colores oscuros o claros. Si coincide el color de la remera con la estampa,
+            podemos hacerlo en semitono.
+          </p>
+        </div>
+
+        <!-- IMAGEN -->
+        <div class="block">
+          <h3>Subí tu diseño (PNG/JPG)</h3>
+          <input type="file" id="upload" accept="image/*" />
+          <button id="clearImage">Limpiar</button>
+        </div>
+
+        <!-- TALLE -->
+        <div class="block">
+          <h3>Talle</h3>
+          <div class="size-grid">
+            <button>S / 1</button>
+            <button>M / 2</button>
+            <button>L / 3</button>
+            <button>XL / 4</button>
+            <button>XXL / 5</button>
+          </div>
+          <h4>Oversize</h4>
+          <div class="size-grid">
+            <button>S / 1</button>
+            <button>M / 2</button>
+            <button>L / 3</button>
+            <button>XL / 4</button>
+            <button>XXL / 5</button>
+          </div>
+        </div>
+
+        <!-- CANTIDAD -->
+        <div class="block">
+          <h3>Cantidad de remeras</h3>
+          <input type="number" id="cantidad" min="1" max="100" value="1" />
+        </div>
+
+        <!-- CALIDAD -->
+        <div class="block">
+          <h3>Calidad del algodón</h3>
+          <div class="calidad-btns">
+            <button class="selected">24.1</button>
+            <button>20.1</button>
+          </div>
+          <p class="info">
+            La tela <b>24.1</b> es más liviana y transpirable.<br>
+            La <b>20.1</b> es más pesada y gruesa.
+          </p>
+        </div>
+
+        <!-- EXPORTAR / ENVIAR -->
+        <div class="block export-section">
+          <button id="exportBtn" class="big-btn">EXPORTAR PNG</button>
+          <button id="sendBtn" class="big-btn highlight">ENVIAR DISEÑO</button>
+          <p class="info">
+            “Exportar PNG” guarda tu diseño en tu dispositivo.<br>
+            “Enviar diseño” te permite enviarlo por WhatsApp o Email junto con un mensaje adicional.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 🔹 MODAL DE ENVÍO -->
+  <div id="sendModal" class="modal">
+    <div class="modal-content">
+      <h2>Enviar diseño</h2>
+      <p>Elegí cómo querés enviar tu diseño y podés agregar un mensaje opcional.</p>
+      <textarea id="mensajeExtra" placeholder="Mensaje adicional (opcional)"></textarea>
+
+      <div class="modal-buttons">
+        <button id="sendWhatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        <button id="sendEmail"><i class="fa-solid fa-envelope"></i> Email</button>
+      </div>
+
+      <button id="closeModal" class="close-btn">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
