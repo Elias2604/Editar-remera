@@ -378,3 +378,35 @@ button.selected {
     display: none;
   }
 }
+
+/* ======== FIX POSICIÓN EN MÓVIL ======== */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .editor-container {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 10px;
+  }
+
+  .canvas-container {
+    margin: 0 auto !important;
+    padding: 10px;
+    max-width: 90%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  canvas {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+}
