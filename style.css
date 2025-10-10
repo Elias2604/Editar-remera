@@ -410,3 +410,28 @@ button.selected {
     height: auto;
   }
 }
+
+/* ==== Canvas móvil ==== */
+@media (max-width: 768px) {
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 420px; /* tamaño máximo en móvil */
+  }
+
+  canvas {
+    width: 100%;
+    height: auto; /* mantiene proporción */
+    aspect-ratio: 3 / 4; /* evita que se estire verticalmente */
+    border-radius: 12px;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+  .canvas-container {
+    max-width: 600px;
+  }
+}

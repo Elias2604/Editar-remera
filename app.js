@@ -236,3 +236,25 @@ document.getElementById("sendBtnMobile").addEventListener("click", () => {
   document.getElementById("sendModal").style.display = "flex";
   mobileToolbar.classList.remove("active");
 });
+
+const canvasFront = new fabric.Canvas('tshirtCanvasFront');
+const canvasBack = new fabric.Canvas('tshirtCanvasBack');
+
+// Mostrar solo el frente al inicio
+document.getElementById('tshirtCanvasBack').style.display = 'none';
+
+document.getElementById('btnFlip').addEventListener('click', () => {
+  const frontVisible = document.getElementById('tshirtCanvasFront').style.display !== 'none';
+
+  if (frontVisible) {
+    // Mostrar dorso
+    document.getElementById('tshirtCanvasFront').style.display = 'none';
+    document.getElementById('tshirtCanvasBack').style.display = 'block';
+  } else {
+    // Mostrar frente
+    document.getElementById('tshirtCanvasBack').style.display = 'none';
+    document.getElementById('tshirtCanvasFront').style.display = 'block';
+  }
+});
+
+
