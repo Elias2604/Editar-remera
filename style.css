@@ -371,3 +371,10 @@ button.selected {
   }
 }
 
+
+/* Ocultar el panel de controles en versión móvil */
+@media (max-width: 768px) {
+  .controls {
+    display: none;
+  }
+}
