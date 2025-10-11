@@ -435,3 +435,13 @@ button.selected {
     max-width: 600px;
   }
 }
+
+/* Ocultar sección intro en pantallas móviles */
+@media (max-width: 768px) {
+  .intro {
+    display: none !important;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+  }
+}
